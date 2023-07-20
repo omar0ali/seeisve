@@ -1,0 +1,85 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins" />
+    <link rel="stylesheet" href="style.css">
+    <script src="https://kit.fontawesome.com/440def368b.js" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue@3.0.2"></script>
+</head>
+
+<body>
+    <div id="app">
+        <table>
+            <tr>
+                <td style="width: 20%;">
+                    <div class="box">
+                        <p>Please note that only CSV files can be uploaded at this time. Excel files, unfortunately,
+                            cannot be processed as they utilize a different encoding format.</p>
+                        <div class="1">
+                            <input type="file" name="csv_file" id="csv_file" @change="loadCSV($event)" accept=".csv">
+                            <p v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}</p>
+                            <p v-show="parse_header.length>0"><strong>Headers:</strong>  {{parse_header.length}}</p>
+                            <hr>
+                            <div class="1">
+                                <select ref="key_search" placeholder="Select column"
+                                    style="width: 98%; font-size: 15px;">
+                                    <option v-for="key in parse_header">{{key}}</option>
+                                </select>
+                                <input style="width: 98%; margin: 0px;
+                                font-size: 15px;" type="text" ref="search" placeholder="Search" id="text">
+                                <button style="width: 98%; font-size: 15px;" @click="searchF();">Search</button>
+                            </div>
+                        </div>
+                        <br>
+                        <p><strong>Search Enabled: </strong> {{searchAtIndex}} <br> <strong>Note: </strong>letter
+                            case-insensitive.</p>
+                        <button style="width: 98%; font-size: 15px;" @click="searchAtIndex=false">Cancel Search</button>
+                        <p v-show="parse_csv_searched.length>0"><strong>Current Rows:</strong> {{parse_csv_searched.length}}</p>
+                        <p v-show="searchStatus!= '' && this.$refs.key_search.value.length>0">{{searchStatus}}</p>
+                    </div>
+                </td>
+                <td style="text-align: right;">
+                    <fieldset id="right" style="overflow: auto; overflow-x: auto;">
+                        <table v-if="searchAtIndex===false" style="border: 0px  white; 
+                            box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left; " v-for="key in parse_header">
+                                        {{ key }}
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tr v-for="csv in parse_csv">
+                                <td style="text-align: left; padding: 10px;" v-for="key in parse_header">
+                                    {{csv[key]}}
+                                </td>
+                            </tr>
+                        </table>
+                        <table v-else="searchAtIndex===true" style="border: 0px  white; 
+                        box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: left; padding: 10px;" v-for="key in parse_header">
+                                        {{ key }}
+                                        </span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tr v-for="csv in parse_csv_searched">
+                                <td style="text-align: left; padding: 10px;" v-for="key in parse_header">
+                                    {{csv[key]}}
+                                </td>
+                            </tr>
+                        </table>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <script src="app.js"></script>
+</body>
+
+</html>
