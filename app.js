@@ -48,6 +48,7 @@ const app = Vue.createApp({
             return result // JavaScript object
         },
         loadCSV(e) {
+            this.searchAtIndex = false;
             let vm = this
             if (window.FileReader) {
                 let reader = new FileReader();

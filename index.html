@@ -19,7 +19,7 @@
                         <p>Please note that only CSV files can be uploaded at this time. Excel files, unfortunately,
                             cannot be processed as they utilize a different encoding format.</p>
                         <div class="1">
-                            <input type="file" name="csv_file" id="csv_file" @change="loadCSV($event)" accept=".csv">
+                            <input type="file" size="100" name="csv_file" id="csv_file" @change="loadCSV($event)" accept=".csv">
                             <p v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}</p>
                             <p v-show="parse_header.length>0"><strong>Headers:</strong>  {{parse_header.length}}</p>
                             <hr>
@@ -30,6 +30,7 @@
                                 </select>
                                 <input style="width: 98%; margin: 0px;
                                 font-size: 15px;" type="text" ref="search" placeholder="Search" id="text">
+                                <br><br>
                                 <button style="width: 98%; font-size: 15px;" @click="searchF();">Search</button>
                             </div>
                         </div>

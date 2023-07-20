@@ -1,19 +1,61 @@
-input {
-    margin: 5px;
-    font-size: 14px;
-    border-radius: 5px;
-}
 
-select {
+input[type=text], select {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    box-shadow: rgba(0, 0, 0, 0.04) 0 1px 3px 0;
+  }
 
-    font-size: 14px;
-    border-radius: 5px;
-}
-
+/* CSS */
 button {
-    font-size: 14px;
-    border-radius: 5px;
+    width: 98%;
+    align-items: center;
+    background-clip: padding-box;
+    background-color: #93b5dc;
+    border: 1px solid transparent;
+    border-radius: .25rem;
+    box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: system-ui, -apple-system, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    justify-content: center;
+    line-height: 1.25;
+    margin: 0;
+    min-height: 3rem;
+    padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+    position: relative;
+    text-decoration: none;
+    transition: all 250ms;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    vertical-align: baseline;
 }
+
+button:hover,
+button:focus {
+    background-color: #32c5fb;
+    box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+}
+
+button:hover {
+    transform: translateY(-1px);
+}
+
+button:active {
+    background-color: #0099c8;
+    box-shadow: rgba(0, 0, 0, .06) 0 2px 4px;
+    transform: translateY(0);
+}
+
 
 table {
     border: 2px solid black;
@@ -70,9 +112,6 @@ p {
     font-size: 18px;
 }
 
-#btnWide {
-    width: 100%;
-}
 
 .box {
     padding: 10px;
