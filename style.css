@@ -1,3 +1,6 @@
+* {
+    font-family: 'Poppins', 'sans-serif';
+}
 input[type=text],
 select {
     width: 100%;
