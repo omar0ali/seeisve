@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Seeisve</title>
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins" />
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/440def368b.js" crossorigin="anonymous"></script>
@@ -19,30 +19,34 @@
                         <p>Please note that only CSV files can be uploaded at this time. Excel files, unfortunately,
                             cannot be processed as they utilize a different encoding format.</p>
                         <div class="1">
-                            <input type="file" size="100" name="csv_file" id="csv_file" @change="loadCSV($event)" accept=".csv">
+                            <input type="file" size="100" name="csv_file" id="csv_file" @change="loadCSV($event)"
+                                accept=".csv">
                             <p v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}</p>
-                            <p v-show="parse_header.length>0"><strong>Headers:</strong>  {{parse_header.length}}</p>
+                            <p v-show="parse_header.length>0"><strong>Headers:</strong> {{parse_header.length}}</p>
                             <hr>
-                            <div class="1">
+                            <div>
                                 <select ref="key_search" placeholder="Select column"
                                     style="width: 98%; font-size: 15px;">
                                     <option v-for="key in parse_header">{{key}}</option>
                                 </select>
                                 <input style="width: 98%; margin: 0px;
                                 font-size: 15px;" type="text" ref="search" placeholder="Search" id="text">
-                                <br><br>
-                                <button style="width: 98%; font-size: 15px;" @click="searchF();">Search</button>
+                                <br>
+                                <p><strong>Search Enabled: </strong> {{searchAtIndex}} <br> <strong>Note:
+                                    </strong>letter
+                                    case-insensitive.</p>
                             </div>
                         </div>
-                        <br>
-                        <p><strong>Search Enabled: </strong> {{searchAtIndex}} <br> <strong>Note: </strong>letter
-                            case-insensitive.</p>
-                        <button style="width: 98%; font-size: 15px;" @click="searchAtIndex=false">Cancel Search</button>
-                        <p v-show="parse_csv_searched.length>0"><strong>Current Rows:</strong> {{parse_csv_searched.length}}</p>
+                        <div style="display: flex;;">
+                            <button title="Search" style="width: 85%; font-size: 15px;" @click="searchF();">Search</button>
+                            <button title="Clear search, return the original result." style="width: 15%; font-size: 15px; background-color:rgb(189, 90, 90)" @click="searchAtIndex=false">X</button>
+                        </div>
+                        <p v-show="parse_csv_searched.length>0"><strong>Current Rows:</strong>
+                            {{parse_csv_searched.length}}</p>
                         <p v-show="searchStatus!= '' && this.$refs.key_search.value.length>0">{{searchStatus}}</p>
                     </div>
                 </td>
-                <td style="text-align: right;">
+                <td style="text-align: right; min-width: 80%;">
                     <fieldset id="right" style="overflow: auto; overflow-x: auto;">
                         <table v-if="searchAtIndex===false" style="border: 0px  white; 
                             box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">

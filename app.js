@@ -1,3 +1,4 @@
+
 const app = Vue.createApp({
     data() {
         return {
@@ -19,35 +20,54 @@ const app = Vue.createApp({
             for (let i = 0; i < vm.parse_csv.length; i++) {
                 // console.log(this.$refs.key_search.value);
                 // console.log(vm.parse_csv[i][this.$refs.key_search.value]);
-                if(vm.parse_csv[i][this.$refs.key_search.value].toLowerCase().includes(this.$refs.search.value.toLowerCase())) {
+                if (vm.parse_csv[i][this.$refs.key_search.value].toLowerCase().includes(this.$refs.search.value.toLowerCase())) {
                     result.push(vm.parse_csv[i]);
                 }
             }
             vm.parse_csv_searched = result;
         },
         csvJSON(csv) {
-            var vm = this
-            let lines = csv.split("\n")
+            var vm = this;
+            let lines = csv.split("\n");
             let result = [];
-            vm.parse_header = lines[0].split(",")
-            //remove the last empy header, and make sure its not printing it out.
+            vm.parse_header = lines[0].split(",");
+            //remove the last empty header, and make sure it's not printing it out.
             if (vm.parse_header[vm.parse_header.length - 1] === "\r") {
                 vm.parse_header.pop();
             }
+        
             for (let i = 1; i < lines.length; i++) {
-                let obj = {}
-                let currentline = lines[i].split(",")
-                for (let j = 0; j < vm.parse_header.length; j++) {
-                    obj[vm.parse_header[j]] = currentline[j];
+                let obj = {};
+                let currentline = lines[i].trim();
+                let cells = [];
+                let inQuotes = false;
+                let cell = "";
+        
+                for (let j = 0; j < currentline.length; j++) {
+                    let char = currentline[j];
+        
+                    if (char === "," && !inQuotes) {
+                        cells.push(cell);
+                        cell = "";
+                    } else if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else {
+                        cell += char;
+                    }
                 }
+        
+                // Add the last cell after the loop ends
+                cells.push(cell);
+        
+                for (let j = 0; j < vm.parse_header.length; j++) {
+                    obj[vm.parse_header[j]] = cells[j] || ""; // Use empty string for missing cells
+                }
+        
                 result.push(obj);
             }
-
-            result.pop() // remove the last item because undefined values
-
-            return result // JavaScript object
-        },
-        loadCSV(e) {
+        
+            return result; // JavaScript object
+        },loadCSV(e) {
             this.searchAtIndex = false;
             let vm = this
             if (window.FileReader) {
