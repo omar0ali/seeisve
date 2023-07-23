@@ -1,6 +1,7 @@
 * {
     font-family: 'Poppins', 'sans-serif';
 }
+
 input[type=text],
 select {
     width: 100%;
@@ -21,31 +22,65 @@ span {
 #myBtn {
     width: 50px;
     height: 50px;
-    border: none; /* Remove borders */
-    outline: none; /* Remove outline */
-    background-color: #66c1dc; /* Set a background color */
-    color: white; /* Text color */
-    cursor: pointer; /* Add a mouse pointer on hover */
-    padding: 15px; /* Some padding */
-    border-radius: 10px; /* Rounded corners */
-    font-size: 18px; /* Increase font size */
+    border: none;
+    /* Remove borders */
+    outline: none;
+    /* Remove outline */
+    background-color: #66c1dc;
+    /* Set a background color */
+    color: white;
+    /* Text color */
+    cursor: pointer;
+    /* Add a mouse pointer on hover */
+    padding: 15px;
+    /* Some padding */
+    border-radius: 10px;
+    /* Rounded corners */
+    font-size: 18px;
+    /* Increase font size */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-  }
+}
 
-  #myBtnIn {
+.myBtnIn {
     width: auto;
     margin: 8px 0;
-    border: none; /* Remove borders */
-    outline: none; /* Remove outline */
-    background-color: #6a6a6a; /* Set a background color */
-    color: white; /* Text color */
+    border: none;
+    /* Remove borders */
+    outline: none;
+    /* Remove outline */
+    background-color: #6a6a6a;
+    /* Set a background color */
+    color: white;
+    /* Text color */
     border: 1px solid;
     border-color: #0099c8;
-    cursor: pointer; /* Add a mouse pointer on hover */
-    padding: 15px; /* Some padding */
-    font-size: 18px; /* Increase font size */
+    cursor: pointer;
+    /* Add a mouse pointer on hover */
+    padding: 15px;
+    /* Some padding */
+    font-size: 18px;
+    /* Increase font size */
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
-  }
+}
+
+.myBtnInRd {
+    width: 100px;
+    height: 5px;
+    /* Remove borders */
+    outline: none;
+    /* Remove outline */
+    background-color: #762f2f;
+    /* Set a background color */
+    color: white;
+    /* Text color */
+    border: 1px solid;
+    border-color: #0099c8;
+    cursor: pointer;
+    /* Some padding */
+    font-size: 18px;
+    /* Increase font size */
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+}
 
 /* CSS */
 button {
@@ -82,13 +117,13 @@ button:focus {
 }
 
 button:hover {
-    transform: translateY(-5px);
+    transform: scale(1.05);
 }
 
 button:active {
     background-color: #0099c8;
     box-shadow: rgba(0, 0, 0, .06) 0 2px 4px;
-    transform: translateY(0);
+    transform: scale(1);
 }
 
 
@@ -100,6 +135,7 @@ table {
 }
 
 table th {
+    z-index: 50;
     font-size: 20px;
     font-weight: 900;
     padding: 10px;
@@ -165,22 +201,25 @@ p {
     background: #ddd;
     box-shadow: rgba(0, 0, 0, 0.04) 0 1px 3px 0;
 }
+
 .boxFloat {
     border: 1px solid;
     border-color: #0099c8;
+    max-height: 400px;
     padding: 10px;
     border-radius: 5px;
     text-align: left;
     background: #ddd;
     box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
-    display: block; /* Hidden by default */
+    display: block;
+    /* Hidden by default */
     position: fixed;
     top: 50%;
     left: 50%;
     margin-left: -310px;
     margin-top: -150px;
     z-index: 99;
-    width: auto;
+    width: 600px;
 }
 
 label {

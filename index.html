@@ -12,8 +12,19 @@
 
 <body>
     <div id="app">
-        <div v-show="searchTool" class="boxFloat" @mouseleave="toggleSearch()">
-            <div style="display: flex; width: 600px; padding: 3px;">
+        <div v-show="updateCSVTool" class="boxFloat">
+            <p style="font-size: 20px; font-weight: 900;">Edit Cell</p>
+            <p style="font-weight: 600; padding: 10px;">{{ currentCell.header }}</p>
+            <input type="text" :value="currentCell.data" @click="data = $event.target.value"
+                @change="data = $event.target.value" id="text">
+            <button class="myBtnIn" @click="pushEditDataToCSV(data)">Update Cell</button>
+            <div style="width: 100%; text-align: end;">
+                <hr>
+                <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+            </div>
+        </div>
+        <div v-show="searchTool" class="boxFloat">
+            <div style="display: flex; padding: 3px;">
                 <select ref="key_search" style="width: 20%;">
                     <option v-for="key in parse_header">{{key}}</option>
                 </select>
@@ -27,22 +38,30 @@
                 </select>
                 <input style="width: 60%;" v-on:keyup="keyMonitor" type="text" ref="search" placeholder="Search"
                     id="text">
-                <button id="myBtnIn" title="Search" @click="searchF();"><i class="fas fa-search"></i></button>
+                <button class="myBtnIn" title="Search" @click="searchData();"><i class="fas fa-search"></i></button>
             </div>
             <p><strong>Search Enabled: </strong> {{searchAtIndex}} <br> <strong>Note:
                 </strong>letter
                 case-insensitive.</p>
             <p v-show="searchStatus!= '' && this.$refs.key_search.value.length>0">{{searchStatus}}</p>
+            <div style="width: 100%; text-align: end;">
+                <hr>
+                <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+            </div>
         </div>
-        <div v-show="settingTool" class="boxFloat" @mouseleave="toggleSetting()">
-            <div style="width: 600px; padding: 3px;">
+        <div v-show="settingTool" class="boxFloat">
+            <div style="padding: 3px; overflow: auto; max-height: 300px;">
                 <!-- Show settings, export csv file..etc. -->
                 <p style="font-size: 25px;">Settings</p>
                 <p>Export Setting: </p>
                 <p style="font-size: 15px;">Please note that only CSV files can be exported at this time. Excel files,
                     unfortunately, cannot be processed as they utilize a different encoding format.</p>
-                <button id="myBtnIn" style="font-size: 16px;" title="Export current csv" @click="exportCSV();"><i
+                <button class="myBtnIn" style="font-size: 16px;" title="Export current csv" @click="exportCSV();"><i
                         style="padding-right: 10px;" class="fa-solid fa-file-export"></i>Export CSV</button>
+            </div>
+            <div style="width: 100%; text-align: end;">
+                <hr>
+                <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
             </div>
         </div>
         <table>
@@ -72,11 +91,11 @@
                                     </th>
                                 </tr>
                             </thead>
-                            <tr v-for="csv in parse_csv">
+                            <tr v-for="(csv, index) in parse_csv">
                                 <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
-                                    {{csv[key]}}
+                                    <button @click="getCSVby(index, csv[key], key)" class="myBtnIn"><i
+                                            class="fa-regular fa-pen-to-square"></i></button> {{csv[key]}}
                                 </td>
-                                <td><button id="myBtnIn"><i class="fa-regular fa-pen-to-square"></i></button></td>
                             </tr>
                         </table>
                         <table v-else="searchAtIndex===true" style="border: 0px  white; 
@@ -91,7 +110,8 @@
                             </thead>
                             <tr v-for="csv in parse_csv_searched">
                                 <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
-                                    {{csv[key]}}
+                                    <button @click="getCSVby(csv.index, csv.data[key], key)" class="myBtnIn"><i
+                                            class="fa-regular fa-pen-to-square"></i></button> {{csv.data[key]}}
                                 </td>
                             </tr>
                         </table>
@@ -101,9 +121,9 @@
         </table>
         <div style="text-align: center;">
             <span v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}, <strong>Total
-                Columns:</strong> {{parse_header.length}}</span><span v-show="parse_csv_searched.length>0"><strong>,
-                Current Searched Rows:</strong>
-            {{parse_csv_searched.length}}</span>
+                    Columns:</strong> {{parse_header.length}}</span><span v-show="parse_csv_searched.length>0"><strong>,
+                    Current Searched Rows:</strong>
+                {{parse_csv_searched.length}}</span>
         </div>
     </div>
     <script src="app.js"></script>
