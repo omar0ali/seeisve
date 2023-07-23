@@ -12,53 +12,57 @@
 
 <body>
     <div id="app">
+        <div v-show="searchTool" class="boxFloat" @mouseleave="toggleSearch()">
+            <div style="display: flex; width: 600px; padding: 3px;">
+                <select ref="key_search" style="width: 20%;">
+                    <option v-for="key in parse_header">{{key}}</option>
+                </select>
+                <!-- Flexibility to the search function. -->
+                <select ref="option_search" style="width: 20%;">
+                    <option>Includes</option>
+                    <option>Equals</option>
+                    <option>Not Equals</option>
+                    <option>Larger Than</option>
+                    <option>Less Than</option>
+                </select>
+                <input style="width: 60%;" v-on:keyup="keyMonitor" type="text" ref="search" placeholder="Search"
+                    id="text">
+                <button id="myBtnIn" title="Search" @click="searchF();"><i class="fas fa-search"></i></button>
+            </div>
+            <p><strong>Search Enabled: </strong> {{searchAtIndex}} <br> <strong>Note:
+                </strong>letter
+                case-insensitive.</p>
+            <p v-show="searchStatus!= '' && this.$refs.key_search.value.length>0">{{searchStatus}}</p>
+        </div>
+        <div v-show="settingTool" class="boxFloat" @mouseleave="toggleSetting()">
+            <div style="width: 600px; padding: 3px;">
+                <!-- Show settings, export csv file..etc. -->
+                <p style="font-size: 25px;">Settings</p>
+                <p>Export Setting: </p>
+                <p style="font-size: 15px;">Please note that only CSV files can be exported at this time. Excel files,
+                    unfortunately, cannot be processed as they utilize a different encoding format.</p>
+                <button id="myBtnIn" style="font-size: 16px;" title="Export current csv" @click="exportCSV();"><i
+                        style="padding-right: 10px;" class="fa-solid fa-file-export"></i>Export CSV</button>
+            </div>
+        </div>
         <table>
             <tr>
-                <td style="width: 20%;">
-                    <div class="box">
-                        <p>Please note that only CSV files can be uploaded at this time. Excel files, unfortunately,
-                            cannot be processed as they utilize a different encoding format.</p>
-                        <div>
-                            <input type="file" style="font-size: 15px;" name="csv_file" id="csv_file"
-                                @change="loadCSV($event)" accept=".csv">
-                            <p v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}</p>
-                            <p v-show="parse_header.length>0"><strong>Headers:</strong> {{parse_header.length}}</p>
-                            <hr>
-                            <div>
-                                <select ref="key_search" style="width: 100%;">
-                                    <option v-for="key in parse_header">{{key}}</option>
-                                </select>
-                                <div style="display: flex;">
-                                    <!-- Flexibility to the search function. -->
-                                    <select ref="option_search" style="width: 40%;">
-                                        <option>Includes</option>
-                                        <option>Equals</option>
-                                        <option>Not Equals</option>
-                                        <option>Larger Than</option>
-                                        <option>Less Than</option>
-                                    </select>
-                                    <input style="width: 60%;" type="text" ref="search" placeholder="Search" id="text">
-                                </div>
-                                <br>
-                                <p><strong>Search Enabled: </strong> {{searchAtIndex}} <br> <strong>Note:
-                                    </strong>letter
-                                    case-insensitive.</p>
-                            </div>
-                        </div>
-                        <div style="display: flex;">
-                            <button title="Search" style="width: 85%; font-size: 15px;"
-                                @click="searchF();">Search</button>
-                            <button title="Clear search, return the original result."
-                                style="width: 15%; font-size: 15px; background-color:rgb(189, 90, 90)"
-                                @click="searchAtIndex=false">X</button>
-                        </div>
-                        <p v-show="parse_csv_searched.length>0"><strong>Current Rows:</strong>
-                            {{parse_csv_searched.length}}</p>
-                        <p v-show="searchStatus!= '' && this.$refs.key_search.value.length>0">{{searchStatus}}</p>
-                    </div>
+                <td style="width: 3%;">
+                    <button @click="toggleSearch()" id="myBtn" title="Go to search"><i
+                            class="fas fa-search"></i></button>
+                    <br><br>
+                    <button @click="toggleSetting()" id="myBtn" title="Go to settings"><i
+                            class="fa-solid fa-gears"></i></button>
+
                 </td>
-                <td style="text-align: right; min-width: 80%;">
+                <td>
                     <fieldset id="right">
+                        <div class="box" style="background-color: white;">
+                            <p>Please note that only CSV files can be uploaded at this time. Excel files, unfortunately,
+                                cannot be processed as they utilize a different encoding format.</p>
+                            <input type="file" style="font-size: 18px;" name="csv_file" id="csv_file"
+                                @change="loadCSV($event)" accept=".csv">
+                        </div>
                         <table v-if="searchAtIndex===false" style="border: 0px  white; 
                             box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">
                             <thead>
@@ -69,9 +73,10 @@
                                 </tr>
                             </thead>
                             <tr v-for="csv in parse_csv">
-                                <td style="text-align: left; padding: 10px;" v-for="key in parse_header">
+                                <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
                                     {{csv[key]}}
                                 </td>
+                                <td><button id="myBtnIn"><i class="fa-regular fa-pen-to-square"></i></button></td>
                             </tr>
                         </table>
                         <table v-else="searchAtIndex===true" style="border: 0px  white; 
@@ -85,7 +90,7 @@
                                 </tr>
                             </thead>
                             <tr v-for="csv in parse_csv_searched">
-                                <td style="text-align: left; padding: 10px;" v-for="key in parse_header">
+                                <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
                                     {{csv[key]}}
                                 </td>
                             </tr>
@@ -94,6 +99,12 @@
                 </td>
             </tr>
         </table>
+        <div style="text-align: center;">
+            <span v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}, <strong>Total
+                Columns:</strong> {{parse_header.length}}</span><span v-show="parse_csv_searched.length>0"><strong>,
+                Current Searched Rows:</strong>
+            {{parse_csv_searched.length}}</span>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>

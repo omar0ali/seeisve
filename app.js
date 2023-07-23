@@ -1,7 +1,8 @@
-
 const app = Vue.createApp({
     data() {
         return {
+            searchTool: false,
+            settingTool: false,
             searchStatus: "",
             searchAtIndex: false,
             parse_header: [],
@@ -13,12 +14,21 @@ const app = Vue.createApp({
     },
 
     methods: {
+        keyMonitor: function (event) {
+            if (event.key == "Enter") {
+                this.searchF();
+                this.toggleSearch();
+            }
+        },
         searchF: function () {
+            console.log(this.$refs.search.value)
+            if (this.$refs.search.value === "") {
+                this.searchAtIndex = false;
+                return;
+            }
             var vm = this;
             let result = [];
-
-            console.log(this.$refs.option_search.value);
-
+            //console.log(this.$refs.option_search.value);
             this.searchAtIndex = true;
             for (let i = 0; i < vm.parse_csv.length; i++) {
                 switch (this.$refs.option_search.value.toLowerCase()) {
@@ -50,6 +60,12 @@ const app = Vue.createApp({
                 }
             }
             vm.parse_csv_searched = result;
+        },
+        toggleSearch: function () {
+            this.searchTool = !this.searchTool;
+        },
+        toggleSetting: function () {
+            this.settingTool = !this.settingTool;
         },
         csvJSON(csv) {
             var vm = this;
@@ -112,6 +128,8 @@ const app = Vue.createApp({
             } else {
                 alert('FileReader are not supported in this browser.');
             }
+        }, exportCSV() {
+            alert("This feature is not available at this time.");
         }
     }
 });

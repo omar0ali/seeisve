@@ -13,6 +13,40 @@ select {
     box-shadow: rgba(0, 0, 0, 0.04) 0 1px 3px 0;
 }
 
+span {
+    font-size: 14px;
+    border-radius: 3px;
+}
+
+#myBtn {
+    width: 50px;
+    height: 50px;
+    border: none; /* Remove borders */
+    outline: none; /* Remove outline */
+    background-color: #66c1dc; /* Set a background color */
+    color: white; /* Text color */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px; /* Some padding */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 18px; /* Increase font size */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  }
+
+  #myBtnIn {
+    width: auto;
+    margin: 8px 0;
+    border: none; /* Remove borders */
+    outline: none; /* Remove outline */
+    background-color: #6a6a6a; /* Set a background color */
+    color: white; /* Text color */
+    border: 1px solid;
+    border-color: #0099c8;
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px; /* Some padding */
+    font-size: 18px; /* Increase font size */
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.3);
+  }
+
 /* CSS */
 button {
     width: 98%;
@@ -38,8 +72,6 @@ button {
     text-decoration: none;
     transition: all 250ms;
     user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
     vertical-align: baseline;
 }
 
@@ -50,7 +82,7 @@ button:focus {
 }
 
 button:hover {
-    transform: translateY(-1px);
+    transform: translateY(-5px);
 }
 
 button:active {
@@ -61,17 +93,19 @@ button:active {
 
 
 table {
-    border: 2px solid black;
-    box-shadow: 0px 0px 0px 3px rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
     padding: 1px;
-    overflow-x: auto;
+    overflow: auto;
+    height: 97%;
+    width: 100%;
 }
 
 table th {
+    font-size: 20px;
+    font-weight: 900;
     padding: 10px;
-    border: 1px solid black;
-    box-shadow: 0px 0px 0px 2px rgba(0, 0, 0, 0.1);
+    border: 2px solid #66c1dc;
+    border-radius: 3px;
+    box-shadow: 0px 0px 0px 3px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0rem;
     background-color: white;
@@ -81,8 +115,6 @@ table th {
 table,
 tr,
 td {
-    width: 100%;
-    height: 100%;
     vertical-align: top;
     padding: 4px;
 }
@@ -94,14 +126,15 @@ td {
 }
 
 fieldset {
-    margin: 1px;
-    height: 97.5%;
-    border-radius: 4px;
-    width: fit-content;
+    height: 97%;
+    width: auto;
+    border-color: #0099c8;
+    border-radius: 6px;
     /* Adjust the fieldset width based on its content */
-    min-width: 97.3%;
+    min-width: 98%;
     /* Ensure the fieldset occupies at least the width of the container */
     overflow: scroll;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
 }
 
 #right {
@@ -109,7 +142,7 @@ fieldset {
 }
 
 
-td {
+#td {
     box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.2);
     padding: 10px;
 }
@@ -127,12 +160,27 @@ p {
 
 .box {
     padding: 10px;
-    width: 94%;
-    min-width: 94%;
     border-radius: 5px;
     text-align: left;
     background: #ddd;
     box-shadow: rgba(0, 0, 0, 0.04) 0 1px 3px 0;
+}
+.boxFloat {
+    border: 1px solid;
+    border-color: #0099c8;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: left;
+    background: #ddd;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.4);
+    display: block; /* Hidden by default */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-left: -310px;
+    margin-top: -150px;
+    z-index: 99;
+    width: auto;
 }
 
 label {
