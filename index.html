@@ -12,118 +12,176 @@
 
 <body>
     <div id="app">
-        <div v-show="updateCSVTool" class="boxFloat">
-            <p style="font-size: 20px; font-weight: 900;">Edit Cell</p>
-            <p style="font-weight: 600; padding: 10px;">{{ currentCell.header }}</p>
-            <input type="text" :value="currentCell.data" @click="data = $event.target.value"
-                @change="data = $event.target.value" id="text">
-            <button class="myBtnIn" @click="pushEditDataToCSV(data)">Update Cell</button>
-            <div style="width: 100%; text-align: end;">
-                <hr>
-                <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
-            </div>
+        <div v-if="isMobile()">
+            <h2>Seeisve - Your Solution for Viewing and Editing CSV Files</h2>
+            <h3>We apologize for the inconvenience. This website is currently not optimized for mobile devices. For the
+                best user experience, we recommend accessing our website on a desktop or laptop computer. Thank you for
+                your understanding.</h3>
         </div>
-        <div v-show="searchTool" class="boxFloat">
-            <div style="display: flex; padding: 3px;">
-                <select ref="key_search" style="width: 20%;">
-                    <option v-for="key in parse_header">{{key}}</option>
-                </select>
-                <!-- Flexibility to the search function. -->
-                <select ref="option_search" style="width: 20%;">
-                    <option>Includes</option>
-                    <option>Equals</option>
-                    <option>Not Equals</option>
-                    <option>Larger Than</option>
-                    <option>Less Than</option>
-                </select>
-                <input style="width: 60%;" v-on:keyup="keyMonitor" type="text" ref="search" placeholder="Search"
-                    id="text">
-                <button class="myBtnIn" title="Search" @click="searchData();"><i class="fas fa-search"></i></button>
+        <div v-else>
+            <div v-show="EditRowsOfColumnWindow" class="boxFloat">
+                <h3>Advanced Edit Option</h3>
+                <p>Edit rows of <i style="font-size: 18px; font-weight: 900; text-decoration: underline;">{{EditRowOf}}</i></p>
+                <i v-show="searchEnabled"><strong>Note:</strong> Only searched data will be affected.</i>
+                    <input style="width: 100%;" type="text" ref="editColumn"
+                        placeholder="Edit rows of selected column to:" id="text">
+                <button class="myBtnIn" title="Update" @click="updateRows();">Update Rows</button>
+                <div style="width: 100%; text-align: end;">
+                    <hr>
+                    <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+                </div>
             </div>
-            <p><strong>Search Enabled: </strong> {{searchAtIndex}} <br> <strong>Note:
-                </strong>letter
-                case-insensitive.</p>
-            <p v-show="searchStatus!= '' && this.$refs.key_search.value.length>0">{{searchStatus}}</p>
-            <div style="width: 100%; text-align: end;">
-                <hr>
-                <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+            <div v-show="updateCSVWindow" class="boxFloat">
+                <p style="font-size: 20px; font-weight: 900;">Edit Cell</p>
+                <p style="font-weight: 600; padding: 10px;">{{ currentCell.header }}</p>
+                <input type="text" :value="currentCell.data" @click="data = $event.target.value"
+                    @change="data = $event.target.value" id="text">
+                <button class="myBtnIn" @click="pushEditDataToCSV(data)">Update Cell</button>
+                <div style="width: 100%; text-align: end;">
+                    <hr>
+                    <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+                </div>
             </div>
-        </div>
-        <div v-show="settingTool" class="boxFloat">
-            <div style="padding: 3px; overflow: auto; max-height: 300px;">
-                <!-- Show settings, export csv file..etc. -->
-                <p style="font-size: 25px;">Settings</p>
-                <p>Export Setting: </p>
-                <p style="font-size: 15px;">Please note that only CSV files can be exported at this time. Excel files,
-                    unfortunately, cannot be processed as they utilize a different encoding format.</p>
-                <button class="myBtnIn" style="font-size: 16px;" title="Export current csv" @click="exportCSV();"><i
-                        style="padding-right: 10px;" class="fa-solid fa-file-export"></i>Export CSV</button>
+            <div v-show="searchWindow" class="boxFloat">
+                <div style="display: flex; padding: 3px;">
+                    <select ref="key_search" style="width: 20%;">
+                        <option v-for="key in parse_header">{{key}}</option>
+                    </select>
+                    <!-- Flexibility to the search function. -->
+                    <select ref="option_search" style="width: 20%;">
+                        <option>Includes</option>
+                        <option>Equals</option>
+                        <option>Not Equals</option>
+                        <option>Larger Than</option>
+                        <option>Less Than</option>
+                    </select>
+                    <input style="width: 60%;" v-on:keyup="keyMonitor" type="text" ref="search" placeholder="Search"
+                        id="text">
+                    <button class="myBtnIn" title="Search" @click="searchData();"><i class="fas fa-search"></i></button>
+                </div>
+                <p style="font-size: 14px;"><strong>Search Enabled: </strong> {{searchEnabled}} <br> <strong>Note:
+                    </strong>letter
+                    case-insensitive.</p>
+                <p style="font-size: 14px;" v-show="searchStatus!= '' && this.$refs.key_search.value.length>0">
+                    {{searchStatus}}</p>
+                <div style="width: 100%; text-align: end;">
+                    <hr>
+                    <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+                </div>
             </div>
-            <div style="width: 100%; text-align: end;">
-                <hr>
-                <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+            <div v-show="settingWindow" class="boxFloat">
+                <div style="padding: 3px; overflow: auto; max-height: 300px;">
+                    <!-- Show settings, export csv file..etc. -->
+                    <p style="font-size: 25px;">Settings</p>
+                    <h3>Export Setting </h3>
+                    <p style="font-size: 15px;">Please note that only CSV files can be exported at this time. Excel
+                        files,
+                        unfortunately, cannot be processed as they utilize a different encoding format.</p>
+                    <button class="myBtnIn" style="font-size: 16px;" title="Export current csv" @click="exportCSV();"><i
+                            style="padding-right: 10px;" class="fa-solid fa-file-export"></i>Export CSV</button>
+                </div>
+                <div style="width: 100%; text-align: end;">
+                    <hr>
+                    <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+                </div>
             </div>
-        </div>
-        <table>
-            <tr>
-                <td style="width: 3%;">
-                    <button @click="toggleSearch()" id="myBtn" title="Go to search"><i
-                            class="fas fa-search"></i></button>
-                    <br><br>
-                    <button @click="toggleSetting()" id="myBtn" title="Go to settings"><i
-                            class="fa-solid fa-gears"></i></button>
-
-                </td>
-                <td>
-                    <fieldset id="right">
-                        <div class="box" style="background-color: white;">
-                            <p>Please note that only CSV files can be uploaded at this time. Excel files, unfortunately,
-                                cannot be processed as they utilize a different encoding format.</p>
-                            <input type="file" style="font-size: 18px;" name="csv_file" id="csv_file"
-                                @change="loadCSV($event)" accept=".csv">
-                        </div>
-                        <table v-if="searchAtIndex===false" style="border: 0px  white; 
+            <div v-show="aboutWindow" class="boxFloat">
+                <div style="padding: 3px; overflow: auto; max-height: 300px;">
+                    <!-- Show settings, export csv file..etc. -->
+                    <p style="font-size: 25px;">About</p>
+                    <h3>Seeisve - Your Solution for Viewing and Editing CSV Files</h3>
+                    <p>With this tool, we aim to make managing CSV files a seamless and efficient experience. Our web
+                        app provides the tools you need to effortlessly view, update, search, and export your CSV files.
+                    </p>
+                    <h3>Key Features and Benefits</h3>
+                    <ul>
+                        <li>View CSV Files: Easily visualize the contents of your CSV files right in your browser.</li>
+                        <li>Update on the Fly: Make quick edits to your CSV data directly within Seeisve.</li>
+                        <li>Effortless Searching: Find specific data within large CSV files in seconds.</li>
+                        <li>Export with Ease: Save your modifications and export the updated CSV file for sharing and
+                            collaboration.</li>
+                    </ul>
+                    <h3>Contact</h3>
+                    <p>I welcome questions, suggestions, or any feedback. Feel free to get in touch with me at
+                        bajunaidomar@gmail.com.</p>
+                    <div class="social-icons">
+                        <a href="https://github.com/omar0ali/"><i class="fab fa-github"></i></a>
+                        <a href="http://www.linkedin.com/in/omarbajunaid"><i class="fab fa-linkedin"></i></a>
+                        <a href="https://github.com/omarbajunaid/"><i class="fab fa-github"></i></a>
+                        <a href="https://twitter.com/0mar41i/"><i class="fab fa-twitter"></i></a>
+                    </div>
+                    <p style="font-size: 15px;">© 2023 Seeisve. All rights reserved.</p>
+                </div>
+                <div style="width: 100%; text-align: end;">
+                    <hr>
+                    <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Close</button>
+                </div>
+            </div>
+            <table>
+                <tr>
+                    <td style="width: 3%;">
+                        <button @click="toggleSearch()" id="myBtn" title="Go to search"><i
+                                class="fas fa-search"></i></button>
+                        <br>
+                        <br>
+                        <button @click="toggleSetting()" id="myBtn" title="Go to settings"><i
+                                class="fa-solid fa-gears"></i></button>
+                        <hr>
+                        <button @click="toggleAbout()" id="myBtn" title="Go to settings"><i
+                                class="fa-solid fa-info"></i></button>
+                    </td>
+                    <td>
+                        <fieldset id="right">
+                            <div class="box" style="background-color: white;">
+                                <p>Please note that only CSV files can be uploaded at this time. Excel files,
+                                    unfortunately,
+                                    cannot be processed as they utilize a different encoding format.</p>
+                                <input type="file" style="font-size: 18px;" name="csv_file" id="csv_file"
+                                    @change="loadCSV($event)" accept=".csv">
+                            </div>
+                            <table v-if="searchEnabled===false" style="border: 0px  white; 
+                                box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; " v-for="key in parse_header">
+                                            <button @click="toggleEditRow(key);" style="width: 100%;" class="myBtnIn" style="font-size: 16px;"><i style="padding-right: 10px;" class="fa-solid fa-file-pen"></i>{{ key }}</button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tr v-for="(csv, index) in parse_csv">
+                                    <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
+                                        <button @click="getCSVby(index, csv[key], key)" class="myBtnIn"><i
+                                                class="fa-regular fa-pen-to-square"></i></button> {{csv[key]}}
+                                    </td>
+                                </tr>
+                            </table>
+                            <table v-else="searchEnabled===true" style="border: 0px  white; 
                             box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: left; " v-for="key in parse_header">
-                                        {{ key }}
-                                    </th>
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: left; " v-for="key in parse_header">
+                                            <button @click="toggleEditRow(key);" style="width: 100%;" class="myBtnIn" style="font-size: 16px;"><i style="padding-right: 10px;" class="fa-solid fa-file-pen"></i>{{ key }}</button>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tr v-for="csv in parse_csv_searched">
+                                    <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
+                                        <button @click="getCSVby(csv.index, csv.data[key], key)" class="myBtnIn"><i
+                                                class="fa-regular fa-pen-to-square"></i></button> {{csv.data[key]}}
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tr v-for="(csv, index) in parse_csv">
-                                <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
-                                    <button @click="getCSVby(index, csv[key], key)" class="myBtnIn"><i
-                                            class="fa-regular fa-pen-to-square"></i></button> {{csv[key]}}
-                                </td>
-                            </tr>
-                        </table>
-                        <table v-else="searchAtIndex===true" style="border: 0px  white; 
-                        box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">
-                            <thead>
-                                <tr>
-                                    <th style="text-align: left; padding: 10px;" v-for="key in parse_header">
-                                        {{ key }}
-                                        </span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tr v-for="csv in parse_csv_searched">
-                                <td id="td" style="text-align: left; padding: 10px;" v-for="key in parse_header">
-                                    <button @click="getCSVby(csv.index, csv.data[key], key)" class="myBtnIn"><i
-                                            class="fa-regular fa-pen-to-square"></i></button> {{csv.data[key]}}
-                                </td>
-                            </tr>
-                        </table>
-                    </fieldset>
-                </td>
-            </tr>
-        </table>
-        <div style="text-align: center;">
-            <span v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}, <strong>Total
-                    Columns:</strong> {{parse_header.length}}</span><span v-show="parse_csv_searched.length>0"><strong>,
-                    Current Searched Rows:</strong>
-                {{parse_csv_searched.length}}</span>
+                            </table>
+                        </fieldset>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align: center;">
+                <span v-show="parse_csv.length>0"><strong>Total Rows:</strong> {{parse_csv.length}}, <strong>Total
+                        Columns:</strong> {{parse_header.length}}</span><span
+                    v-show="parse_csv_searched.length>0"><strong>,
+                        Current Searched Rows:</strong>
+                    {{parse_csv_searched.length}}</span>
+            </div>
         </div>
     </div>
     <script src="app.js"></script>

@@ -1,11 +1,13 @@
 const app = Vue.createApp({
     data() {
         return {
-            searchTool: false,
-            settingTool: false,
+            searchWindow: false,
+            settingWindow: false,
+            aboutWindow: false,
             searchStatus: "",
-            searchAtIndex: false,
-            updateCSVTool: false,
+            searchEnabled: false,
+            updateCSVWindow: false,
+            EditRowsOfColumnWindow: false,
             currentCell: {
                 header: "", data: "", index: -1
             },
@@ -14,80 +16,122 @@ const app = Vue.createApp({
             parse_csv_searched: [],
             sortOrders: {},
             sortKey: '',
-            text: ""
+            EditRowOf: ""
         };
     },
 
     methods: {
+        cleanUp: function() {
+            this.searchStatus = "";
+            this.currentCell = {
+                header: "", data: "", index: -1
+            }
+            this.parse_header = [];
+            this.parse_csv = [];
+            this.parse_csv_searched= [];
+            this.EditRowOf = "";
+            this.searchEnabled = false;
+            this.$refs.search.value = "";
+            this.$refs.editColumn.value = "";
+
+        },
         keyMonitor: function (event) {
             if (event.key == "Enter") {
                 this.searchData();
                 this.toggleOutEverything();
             }
+        }, toggleSearch: function () {
+            this.toggleOutEverything();
+            this.searchWindow = !this.searchWindow;
+        },
+        toggleSetting: function () {
+            this.toggleOutEverything();
+            this.settingWindow = !this.settingWindow;
+        },
+        toggleUpdateCSVWindow: function () {
+            this.toggleOutEverything();
+            this.updateCSVWindow = !this.updateCSVWindow;
+        },
+        toggleOutEverything: function () {
+            this.searchWindow = false;
+            this.settingWindow = false;
+            this.updateCSVWindow = false;
+            this.aboutWindow = false;
+            this.EditRowsOfColumnWindow = false;
+        },
+        toggleAbout: function () {
+            this.toggleOutEverything();
+            this.aboutWindow = !this.aboutWindow;
+        },
+        toggleEditRow: function (key) {
+            this.EditRowOf = key;
+            this.toggleOutEverything();
+            this.EditRowsOfColumnWindow = !this.EditRowsOfColumnWindow;
+        },
+        updateRows: function () {
+            var vm = this;
+            if (this.EditRowOf === "" || this.$refs.editColumn.value === "") {
+                alert("Please fill in empty fields.");
+                return;
+            }
+            if (this.searchEnabled) {
+                for (let i = 0; i < vm.parse_csv_searched.length; i++) {
+                    vm.parse_csv_searched[i].data[this.EditRowOf] = this.$refs.editColumn.value;
+                }
+            } else {
+                for (let i = 0; i < vm.parse_csv.length; i++) {
+                    vm.parse_csv[i][this.EditRowOf] = this.$refs.editColumn.value;
+                }
+            }
+            this.toggleOutEverything();
         },
         searchData: function () {
-            console.log(this.$refs.search.value)
             if (this.$refs.search.value === "") {
-                this.searchAtIndex = false;
+                this.searchEnabled = false;
                 return;
             }
             var vm = this;
             let result = [];
             //console.log(this.$refs.option_search.value);
-            this.searchAtIndex = true;
+            this.searchEnabled = true;
             for (let i = 0; i < vm.parse_csv.length; i++) {
                 switch (this.$refs.option_search.value.toLowerCase()) {
                     case "includes":
                         if (vm.parse_csv[i][this.$refs.key_search.value].toLowerCase().includes(this.$refs.search.value.toLowerCase())) {
-                            result.push({index: i, data: vm.parse_csv[i]});
+                            result.push({ index: i, data: vm.parse_csv[i] });
                         }
                         break;
                     case "equals":
                         if (vm.parse_csv[i][this.$refs.key_search.value].toLowerCase() === (this.$refs.search.value.toLowerCase())) {
-                            result.push(vm.parse_csv[i]);
+                            result.push({ index: i, data: vm.parse_csv[i] });
                         }
                         break;
                     case "not equals":
                         if (vm.parse_csv[i][this.$refs.key_search.value].toLowerCase() !== (this.$refs.search.value.toLowerCase())) {
-                            result.push(vm.parse_csv[i]);
+                            result.push({ index: i, data: vm.parse_csv[i] });
                         }
                         break;
                     case "larger than":
-                        if (parseInt(vm.parse_csv[i][this.$refs.key_search.value].toLowerCase()) > parseInt((this.$refs.search.value.toLowerCase()))) {
-                            result.push(vm.parse_csv[i]);
+                        if (parseInt(vm.parse_csv[i][this.$refs.key_search.value]) > parseInt((this.$refs.search.value))) {
+                            result.push({ index: i, data: vm.parse_csv[i] });
                         }
                         break;
                     case "less than":
-                        if (parseInt(vm.parse_csv[i][this.$refs.key_search.value].toLowerCase()) < parseInt((this.$refs.search.value.toLowerCase()))) {
-                            result.push(vm.parse_csv[i]);
+                        if (parseInt(vm.parse_csv[i][this.$refs.key_search.value]) < parseInt((this.$refs.search.value))) {
+                            result.push({ index: i, data: vm.parse_csv[i] });
                         }
                         break;
                 }
             }
             vm.parse_csv_searched = result;
-        },
-        toggleSearch: function () {
-            this.toggleOutEverything();
-            this.searchTool = !this.searchTool;
-        },
-        toggleSetting: function () {
-            this.toggleOutEverything();
-            this.settingTool = !this.settingTool;
-        },
-        toggleUpdateCSVTool: function () {
-            this.toggleOutEverything();
-            this.updateCSVTool = !this.updateCSVTool;
-        },
-        toggleOutEverything: function () {
-            this.searchTool = false;
-            this.settingTool = false;
-            this.updateCSVTool = false;
-        },
-        csvJSON(csv) {
+        }, csvJSON(csv) {
+            this.cleanUp();
             var vm = this;
             let lines = csv.split("\n");
             let result = [];
-            vm.parse_header = lines[0].split(",");
+            vm.parse_header = lines[0].split(",").map(function (value) {
+                return value.trim();
+            });
             //remove the last empty header, and make sure it's not printing it out.
             if (vm.parse_header[vm.parse_header.length - 1] === "\r") {
                 vm.parse_header.pop();
@@ -118,22 +162,20 @@ const app = Vue.createApp({
                 for (let j = 0; j < vm.parse_header.length; j++) {
                     obj[vm.parse_header[j]] = cells[j] || ""; // Use empty string for missing cells
                 }
-
                 result.push(obj);
             }
 
             return result; // JavaScript object
         }, loadCSV(e) {
-            this.searchAtIndex = false;
             let vm = this
             if (window.FileReader) {
                 let reader = new FileReader();
+                if(e.target.files[0] === undefined) {return;}
                 reader.readAsText(e.target.files[0]);
                 // Handle errors load
                 reader.onload = function (event) {
                     let csv = event.target.result;
                     vm.parse_csv = vm.csvJSON(csv)
-
                 };
                 reader.onerror = function (evt) {
                     if (evt.target.error.name == "NotReadableError") {
@@ -180,13 +222,19 @@ const app = Vue.createApp({
             vm.currentCell.header = key;
             vm.currentCell.data = data;
             vm.currentCell.index = index;
-            console.log(index, data, key);
-            vm.toggleUpdateCSVTool();
+            //console.log(index, data, key);
+            vm.toggleUpdateCSVWindow();
         }, pushEditDataToCSV(newData) {
             vm = this;
             vm.parse_csv[parseInt(vm.currentCell.index)][vm.currentCell.header] = newData;
             vm.currentCell.data = newData;
             this.toggleOutEverything();
+        }, isMobile() {
+            if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                return true
+            } else {
+                return false
+            }
         }
     }
 });
