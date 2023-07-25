@@ -2,6 +2,15 @@
     font-family: 'Poppins', 'sans-serif';
 }
 
+h2{
+    margin: 0;
+    background-color: gray;
+    color: white;
+    text-shadow: 3px 3px 10px black;
+    border-radius: 10px;
+    padding: 10px;
+}
+
 input[type=text],
 select {
     width: 100%;
