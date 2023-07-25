@@ -186,38 +186,38 @@ const app = Vue.createApp({
                 alert('FileReader are not supported in this browser.');
             }
         }, exportCSV() {
-            var vm = this;
-            //Check if there is a file to export.
-            if (this.parse_header.length <= 0) {
-                alert("There is nothing to export.");
-                return;
+            if (this.parse_header.length <= 0 || this.parse_csv.length <= 0) {
+              alert("There is nothing to export.");
+              return;
             }
-
-            let text = ""; //data to be downloaded.
-            //getting data 
-            for (let i = 0; i < vm.parse_header.length; i++) {
-                text = text + vm.parse_header[i] + ","
+          
+            let text = "";
+          
+            // Append headers to the CSV
+            text += this.parse_header.join(",") + "\n";
+          
+            // Append data rows to the CSV
+            for (let i = 0; i < this.parse_csv.length; i++) {
+              let row = this.parse_header.map((header) => {
+                // Make sure to handle cases where data might be empty or contain special characters
+                return JSON.stringify(this.parse_csv[i][header]);
+              });
+              text += row.join(",") + "\n";
             }
-            text = text.substring(0, text.length - 1); //removing last charactor.
-            text = text + "\n";
-            //The rest of the array, parse_csv
-            for (let i = 0; i < vm.parse_csv.length; i++) {
-                for (let j = 0; j < vm.parse_header.length; j++) {
-                    text = text + vm.parse_csv[i][vm.parse_header[j]] + ",";
-                }
-                text = text.substring(0, text.length - 1); //removing last charactor.
-                text = text + "\n";
-            }
-
-            var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', 'dataCSV.csv');
-            element.style.display = 'none';
+          
+            // Create and download the CSV file
+            const element = document.createElement("a");
+            element.setAttribute(
+              "href",
+              "data:text/csv;charset=utf-8," + encodeURIComponent(text)
+            );
+            element.setAttribute("download", "dataCSV.csv");
+            element.style.display = "none";
             document.body.appendChild(element);
             element.click();
             document.body.removeChild(element);
             this.toggleOutEverything();
-        }, getCSVby: function (index, data, key) {
+          }, getCSVby: function (index, data, key) {
             vm = this;
             vm.currentCell.header = key;
             vm.currentCell.data = data;
