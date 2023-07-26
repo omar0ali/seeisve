@@ -4,7 +4,7 @@ const app = Vue.createApp({
             searchWindow: false,
             settingWindow: false,
             aboutWindow: false,
-            searchStatus: "",
+            openFileWindow: false,
             searchEnabled: false,
             updateCSVWindow: false,
             EditRowsOfColumnWindow: false,
@@ -15,20 +15,21 @@ const app = Vue.createApp({
             parse_csv: [],
             parse_csv_searched: [],
             sortOrders: {},
+            searchStatus: "",
             sortKey: '',
             EditRowOf: ""
         };
     },
 
     methods: {
-        cleanUp: function() {
+        cleanUp: function () {
             this.searchStatus = "";
             this.currentCell = {
                 header: "", data: "", index: -1
             }
             this.parse_header = [];
             this.parse_csv = [];
-            this.parse_csv_searched= [];
+            this.parse_csv_searched = [];
             this.EditRowOf = "";
             this.searchEnabled = false;
             this.$refs.search.value = "";
@@ -170,7 +171,7 @@ const app = Vue.createApp({
             let vm = this
             if (window.FileReader) {
                 let reader = new FileReader();
-                if(e.target.files[0] === undefined) {return;}
+                if (e.target.files[0] === undefined) { return; }
                 reader.readAsText(e.target.files[0]);
                 // Handle errors load
                 reader.onload = function (event) {
@@ -187,29 +188,30 @@ const app = Vue.createApp({
             }
         }, exportCSV() {
             if (this.parse_header.length <= 0 || this.parse_csv.length <= 0) {
-              alert("There is nothing to export.");
-              return;
+                alert("There is nothing to export.");
+                return;
             }
-          
+
             let text = "";
-          
+
             // Append headers to the CSV
             text += this.parse_header.join(",") + "\n";
-          
+
             // Append data rows to the CSV
             for (let i = 0; i < this.parse_csv.length; i++) {
-              let row = this.parse_header.map((header) => {
-                // Make sure to handle cases where data might be empty or contain special characters
-                return JSON.stringify(this.parse_csv[i][header]);
-              });
-              text += row.join(",") + "\n";
+                let row = this.parse_header.map((header) => {
+                    // Make sure to handle cases where data might be empty or contain special characters
+                    return JSON.stringify(this.parse_csv[i][header]);
+                });
+                text += row.join(",") + "\n";
             }
-          
+            text = text.substring(0, text.length - 2); 
+
             // Create and download the CSV file
             const element = document.createElement("a");
             element.setAttribute(
-              "href",
-              "data:text/csv;charset=utf-8," + encodeURIComponent(text)
+                "href",
+                "data:text/csv;charset=utf-8," + encodeURIComponent(text)
             );
             element.setAttribute("download", "dataCSV.csv");
             element.style.display = "none";
@@ -217,7 +219,7 @@ const app = Vue.createApp({
             element.click();
             document.body.removeChild(element);
             this.toggleOutEverything();
-          }, getCSVby: function (index, data, key) {
+        }, getCSVby: function (index, data, key) {
             vm = this;
             vm.currentCell.header = key;
             vm.currentCell.data = data;
@@ -229,7 +231,16 @@ const app = Vue.createApp({
             vm.parse_csv[parseInt(vm.currentCell.index)][vm.currentCell.header] = newData;
             vm.currentCell.data = newData;
             this.toggleOutEverything();
-        }, isMobile() {
+        },
+        deleteRow(index) {
+            let vm = this;
+            let text = "Are you sure? Selected row will be deleted.\n\n" + JSON.stringify(vm.parse_csv[index]);
+            if (confirm(text) == true) {
+                vm.parse_csv.splice(index, 1);
+                this.searchEnabled = false;
+            }
+        }
+        , isMobile() {
             if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
                 return true
             } else {

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seeisve</title>
-    <link rel="icon" type="image/x-icon" href="/imgs/Seeisve.png">
+    <link rel="icon" type="image/x-icon" href="/imgs/seisve.ico">
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Poppins" />
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/440def368b.js" crossorigin="anonymous"></script>
@@ -133,13 +133,14 @@
                     </td>
                     <td>
                         <fieldset id="right">
-                            <div class="box" style="background-color: white;">
+                            <div class="box" style="background-color: white; background-color: rgb(217, 217, 217);">
                                 <p>Please note that only CSV files can be uploaded at this time. Excel files,
                                     unfortunately,
                                     cannot be processed as they utilize a different encoding format.</p>
                                 <input type="file" style="font-size: 18px;" name="csv_file" id="csv_file"
                                     @change="loadCSV($event)" accept=".csv">
                             </div>
+                            <p v-show="parse_header.length===0" style="padding: 10px; margin-top: 35px;">Please ensure that the data in the CSV file follows a specific format. Each row represents a record, and each column should be separated by commas. For example, the first line should contain the column headers, such as <i style="text-decoration: underline;">Name, Email, Phone</i> From the second line onward, each row should correspond to a record with its respective values, also separated by commas. For instance, <i style="text-decoration: underline;">Foo, Foo@Bar.com, 111</i>.</p>
                             <table v-if="searchEnabled===false" style="border: 0px  white; 
                                 box-shadow: 0px 0px 0px 0px;" v-if="parse_csv">
                                 <thead>
@@ -154,6 +155,7 @@
                                         <button @click="getCSVby(index, csv[key], key)" class="myBtnIn"><i
                                                 class="fa-regular fa-pen-to-square"></i></button> {{csv[key]}}
                                     </td>
+                                    <td><button @click="deleteRow(index)" style="font-size: 40px; height: 100%;" class="myBtnInRd"><i class="fa-solid fa-square-minus"></i></button></td>
                                 </tr>
                             </table>
                             <table v-else="searchEnabled===true" style="border: 0px  white; 
@@ -170,6 +172,7 @@
                                         <button @click="getCSVby(csv.index, csv.data[key], key)" class="myBtnIn"><i
                                                 class="fa-regular fa-pen-to-square"></i></button> {{csv.data[key]}}
                                     </td>
+                                    <td><button @click="deleteRow(csv.index)" style="font-size: 40px; height: 100%;" class="myBtnInRd"><i class="fa-solid fa-square-minus"></i></button></td>
                                 </tr>
                             </table>
                         </fieldset>
