@@ -227,10 +227,6 @@ const app = Vue.createApp({
             vm.toggleUpdateCSVWindow();
         }, pushEditDataToCSV(newData) {
             vm = this;
-            if(newData.includes(",")) {
-                //Adding quotations between the long text that has one or many commas.
-                newData = "\"" + newData + "\"";
-            }
             vm.parse_csv[parseInt(vm.currentCell.index)][vm.currentCell.header] = newData;
             vm.currentCell.data = newData;
             this.toggleOutEverything();
