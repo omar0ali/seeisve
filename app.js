@@ -4,7 +4,6 @@ const app = Vue.createApp({
             searchWindow: false,
             settingWindow: false,
             aboutWindow: false,
-            openFileWindow: false,
             searchEnabled: false,
             updateCSVWindow: false,
             EditRowsOfColumnWindow: false,
@@ -205,7 +204,7 @@ const app = Vue.createApp({
                 });
                 text += row.join(",") + "\n";
             }
-            text = text.substring(0, text.length - 2); 
+            text = text.substring(0, text.length - 2);
 
             // Create and download the CSV file
             const element = document.createElement("a");
@@ -228,17 +227,33 @@ const app = Vue.createApp({
             vm.toggleUpdateCSVWindow();
         }, pushEditDataToCSV(newData) {
             vm = this;
+            if(newData.includes(",")) {
+                //Adding quotations between the long text that has one or many commas.
+                newData = "\"" + newData + "\"";
+            }
             vm.parse_csv[parseInt(vm.currentCell.index)][vm.currentCell.header] = newData;
             vm.currentCell.data = newData;
             this.toggleOutEverything();
-        },
-        deleteRow(index) {
+        }, deleteRow(index) {
             let vm = this;
             let text = "Are you sure? Selected row will be deleted.\n\n" + JSON.stringify(vm.parse_csv[index]);
             if (confirm(text) == true) {
                 vm.parse_csv.splice(index, 1);
                 this.searchEnabled = false;
             }
+        }, addRow() {
+            let vm = this;
+            let data = {};
+            for (let i = 0; i < vm.parse_header.length; i++) {
+                data[vm.parse_header[i]] = "empty";
+            }
+            vm.parse_csv.push(data);
+
+            // Use setTimeout to introduce a delay before scrolling
+            setTimeout(() => {
+                document.getElementById("right").scrollTo({ top: document.getElementById("right").scrollHeight });
+            }, 100); // Adjust the delay (in milliseconds) as needed, e.g., 100ms
+
         }
         , isMobile() {
             if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
