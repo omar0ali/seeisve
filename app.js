@@ -289,6 +289,7 @@ const app = Vue.createApp({
             for (let i = 0; i < vm.parse_header.length; i++) {
                 data[vm.parse_header[i]] = "empty";
             }
+            vm.searchEnabled = false;
             vm.parse_csv.push(data);
 
             // Use setTimeout to introduce a delay before scrolling
