@@ -1,6 +1,7 @@
 const app = Vue.createApp({
     data() {
         return {
+            consoleWindow: false,
             searchWindow: false,
             settingWindow: false,
             aboutWindow: false,
@@ -16,7 +17,8 @@ const app = Vue.createApp({
             sortOrders: {},
             searchStatus: "",
             sortKey: '',
-            EditRowOf: ""
+            EditRowOf: "",
+            badData: ""
         };
     },
 
@@ -48,7 +50,11 @@ const app = Vue.createApp({
             this.toggleOutEverything();
             this.settingWindow = !this.settingWindow;
         },
-        toggleUpdateCSVWindow: function () {
+        toggleConsoleWindow: function () {
+            this.toggleOutEverything();
+            this.consoleWindow = !this.consoleWindow;
+        }
+        , toggleUpdateCSVWindow: function () {
             this.toggleOutEverything();
             this.updateCSVWindow = !this.updateCSVWindow;
         },
@@ -58,6 +64,7 @@ const app = Vue.createApp({
             this.updateCSVWindow = false;
             this.aboutWindow = false;
             this.EditRowsOfColumnWindow = false;
+            this.consoleWindow = false;
         },
         toggleAbout: function () {
             this.toggleOutEverything();
@@ -67,7 +74,16 @@ const app = Vue.createApp({
             this.EditRowOf = key;
             this.toggleOutEverything();
             this.EditRowsOfColumnWindow = !this.EditRowsOfColumnWindow;
-        },
+        }, tryAddingData: function () {
+            vm = this;
+            let newData = this.csvJSON(vm.badData, true);
+            vm.parse_csv = vm.parse_csv.concat(newData);
+            this.toggleOutEverything();
+            setTimeout(() => {
+                document.getElementById("right").scrollTo({ top: document.getElementById("right").scrollHeight });
+            }, 100); // Adjust the delay (in milliseconds) as needed, e.g., 100ms
+        }
+        ,
         updateRows: function () {
             var vm = this;
             if (this.EditRowOf === "" || this.$refs.editColumn.value === "") {
@@ -124,29 +140,44 @@ const app = Vue.createApp({
                 }
             }
             vm.parse_csv_searched = result;
-        }, csvJSON(csv) {
-            this.cleanUp();
+        }, csvJSON(csv, add = false) {
+            let isCurrupt = false;
             var vm = this;
             let lines = csv.split("\n");
+            vm.badData = "";
             let result = [];
-            vm.parse_header = lines[0].split(",").map(function (value) {
-                return value.trim();
-            });
-            //remove the last empty header, and make sure it's not printing it out.
-            if (vm.parse_header[vm.parse_header.length - 1] === "\r") {
-                vm.parse_header.pop();
+            //Loading csv file, preparing headers ...etc. Don't need to do that if we just adding corrected lines.
+            if (!add) {
+                vm.parse_header = lines[0].split(",").map(function (value) {
+                    return value.trim();
+                });
+                //remove the last empty header, and make sure it's not printing it out.
+                if (vm.parse_header[vm.parse_header.length - 1] === "\r") {
+                    vm.parse_header.pop();
+                }
             }
 
-            for (let i = 1; i < lines.length; i++) {
+            let startAt = 1;
+            if(add) {
+                startAt = 0;
+            }
+            for (let i = startAt; i < lines.length; i++) {
                 let obj = {};
                 let currentline = lines[i].trim();
                 let cells = [];
                 let inQuotes = false;
                 let cell = "";
 
+                //Skip for empty line.
+                if (currentline === "") {
+                    continue;
+                }
+
+                let totalCells = 1;
                 for (let j = 0; j < currentline.length; j++) {
                     let char = currentline[j];
                     if (char === "," && !inQuotes) {
+                        totalCells++;
                         cells.push(cell);
                         cell = "";
                     } else if (char === '"') {
@@ -154,6 +185,14 @@ const app = Vue.createApp({
                     } else {
                         cell += char;
                     }
+                }
+
+                //Check length.
+                if (totalCells !== vm.parse_header.length) {
+                    //console.log("They don't equal", vm.parse_header.length, totalCells);
+                    isCurrupt = true;
+                    vm.badData += currentline + "\n";
+                    continue;
                 }
 
                 // Add the last cell after the loop ends
@@ -164,18 +203,25 @@ const app = Vue.createApp({
                 }
                 result.push(obj);
             }
+            if (isCurrupt) {
+                setTimeout(function () {
+                    vm.consoleWindow = true;
+                },
+                    1);
+            }
 
-            return result; // JavaScript object
+            return result;
         }, loadCSV(e) {
             let vm = this
+            vm.data = "";
             if (window.FileReader) {
                 let reader = new FileReader();
                 if (e.target.files[0] === undefined) { return; }
                 reader.readAsText(e.target.files[0]);
                 // Handle errors load
                 reader.onload = function (event) {
-                    let csv = event.target.result;
-                    vm.parse_csv = vm.csvJSON(csv)
+                    vm.cleanUp();
+                    vm.parse_csv = vm.csvJSON(event.target.result);
                 };
                 reader.onerror = function (evt) {
                     if (evt.target.error.name == "NotReadableError") {
@@ -237,7 +283,7 @@ const app = Vue.createApp({
                 vm.parse_csv.splice(index, 1);
                 this.searchEnabled = false;
             }
-        }, addRow() {
+        }, addRow(show = true) {
             let vm = this;
             let data = {};
             for (let i = 0; i < vm.parse_header.length; i++) {
@@ -246,9 +292,12 @@ const app = Vue.createApp({
             vm.parse_csv.push(data);
 
             // Use setTimeout to introduce a delay before scrolling
-            setTimeout(() => {
-                document.getElementById("right").scrollTo({ top: document.getElementById("right").scrollHeight });
-            }, 100); // Adjust the delay (in milliseconds) as needed, e.g., 100ms
+            if (show) {
+                setTimeout(() => {
+                    document.getElementById("right").scrollTo({ top: document.getElementById("right").scrollHeight });
+                }, 100); // Adjust the delay (in milliseconds) as needed, e.g., 100ms
+            }
+
 
         }
         , isMobile() {

@@ -12,6 +12,9 @@
 </head>
 
 <body>
+    <noscript>
+        Your browser does not support JavaScript!
+     </noscript>
     <div id="app">
         <div v-if="isMobile()">
             <h2>Seeisve - Your Solution for Viewing and Editing CSV Files</h2>
@@ -20,6 +23,16 @@
                 your understanding.</h3>
         </div>
         <div v-else>
+            <div v-show="consoleWindow" class="boxFloat">
+                <h2>Console</h2>
+                <p>We've identified some lines that require manual correction. Please fix them in the box below, and we'll make another attempt to add them for you.</p>
+                <textarea wrap = "off" v-model="badData"></textarea>
+                <div style="width: 100%; text-align: end;">
+                    <hr>
+                    <button style="background-color: #5e7b9e; width: 200px; margin-right: 10px;" class="myBtnInRd" title="Add them again." @click="tryAddingData();">Try Again</button>
+                    <button class="myBtnInRd" title="Close window" @click="toggleOutEverything();">Ignore</button>
+                </div>
+            </div>
             <div v-show="EditRowsOfColumnWindow" class="boxFloat">
                 <h2>Advanced Edit Option</h2>
                 <p>Edit rows of <i
@@ -88,7 +101,7 @@
                 </div>
             </div>
             <div v-show="aboutWindow" class="boxFloat">
-                <div style="padding: 3px; overflow: auto; max-height: 300px;">
+                <div style="padding: 3px; overflow: auto; max-height: 300px; box-shadow: inset 0 -1px 8px #000000;">
                     <!-- Show settings, export csv file..etc. -->
                     <h2>About</h2>
                     <h3>Seeisve - Your Solution for Viewing and Editing CSV Files</h3>
